@@ -6,7 +6,6 @@ import feedparser as fp
 import MediaClasses
 
 
-
 base_url = 'http://www.ultimate-numbers.com/rest/view'
 
 class League():
@@ -108,6 +107,10 @@ class League():
 
         return art_list
 
+    def refresh_league(self):
+        self.add_teams()
+        self.get_news()
+        
 class Team():
     """
     This class keeps all of the statistical information 
@@ -207,6 +210,7 @@ class Team():
         base_url = 'http://www.ultimate-numbers.com/rest/view'
         req = urllib2.Request(base_url+"/team/"+str(self.ID)+"/players/")
         response = urllib2.urlopen(req)
+        if response.code == 111: print "add_player_number fail", self.Name, player_class.First_name
         data = json.loads(response.read())
         
         # Check each player in the Team instance for a name that matches
@@ -220,6 +224,7 @@ class Team():
                    print "Could not match player number for", player['name'],
                    print "on the", statget.name_to_id('',team_id=self.ID,reverse=True)
                    pass
+
             
     def top_five(self, stat):
         """
