@@ -3,7 +3,7 @@
 import SimpleHTTPServer, SocketServer
 import AUDLclasses as cls
 import json
-
+import threading 
 
 AUDL = cls.League()
 AUDL.add_teams()
@@ -130,6 +130,18 @@ def scores_subpage_data(division, League):
     else:
         return "Not a valid path"
 
+def refresh():
+    threading.Timer(300, refresh).start ()
+    print "refreshing server..."
+    temp = cls.League()
+    try:
+       temp.refresh_league()
+       AUDL = temp
+       print "Successfully updated the server snapshot."
+    except:
+       print "Could not update server. Keeping old server snapshot."
+    print "Done."
+
 class Handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 
     def do_GET(self):
@@ -145,13 +157,5 @@ class Handler(SimpleHTTPServer.SimpleHTTPRequestHandler):
 PORT=4001
 httpd = SocketServer.ThreadingTCPServer(("192.168.1.134", PORT), Handler) # Can also use ForkingTCPServer
 print "serving at port", PORT
+refresh()
 httpd.serve_forever()
-
-
-
-
-
-
- 
-
-    
